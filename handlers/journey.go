@@ -7,6 +7,7 @@ import (
 	"be-journey/repositories"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -116,6 +117,8 @@ func (h *handlerJourney) CreateJourney(w http.ResponseWriter, r *http.Request) {
 		UserID:      userId,
 	}
 
+	fmt.Println("ini dataku", filename, request)
+
 	// request := new(journeydto.JourneyRequest)
 	// if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 	// 	w.WriteHeader(http.StatusBadRequest)
@@ -135,7 +138,7 @@ func (h *handlerJourney) CreateJourney(w http.ResponseWriter, r *http.Request) {
 
 	// Declare Context Background, Cloud Name, API Key, API Secret
 	var ctx = context.Background()
-	
+
 	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
 	var API_KEY = os.Getenv("API_KEY")
 	var API_SECRET = os.Getenv("API_SECRET")
