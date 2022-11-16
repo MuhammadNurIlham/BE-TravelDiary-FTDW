@@ -5,12 +5,15 @@ import (
 	dto "be-journey/dto/result"
 	"be-journey/models"
 	"be-journey/repositories"
+	"context"
 	"encoding/json"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -36,9 +39,9 @@ func (h *handlerJourney) FindJourneys(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create Embed Path File on Image property here ...
-	for i, p := range journeys {
-		journeys[i].Image = os.Getenv("PATH_FILE") + p.Image
-	}
+	// for i, p := range journeys {
+	// 	journeys[i].Image = os.Getenv("PATH_FILE") + p.Image
+	// }
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: journeys}
@@ -61,6 +64,7 @@ func (h *handlerJourney) FindJourneys(w http.ResponseWriter, r *http.Request) {
 // 	}
 
 // 	// Create Embed Path File on Image property here ...
+// delete this code if using cloudinary
 // 	for i, p := range journey {
 // 		journey[i].Image = os.Getenv("PATH_FILE") + p.Image
 // 	}
@@ -87,7 +91,8 @@ func (h *handlerJourney) GetJourney(w http.ResponseWriter, r *http.Request) {
 	// 	journeys[i].Image = os.Getenv("PATH_FILE") + p.Image
 	// }
 
-	journey.Image = os.Getenv("PATH_FILE") + journey.Image
+	// delete this code if using cloudinary
+	// journey.Image = os.Getenv("PATH_FILE") + journey.Image
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: journey}
@@ -129,25 +134,26 @@ func (h *handlerJourney) CreateJourney(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Declare Context Background, Cloud Name, API Key, API Secret
-	// var ctx = context.Background()
-	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	// var API_KEY = os.Getenv("API_KEY")
-	// var API_SECRET = os.Getenv("API_SECRET")
+	var ctx = context.Background()
+	
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
 
 	// Add Cloudinary credentials
-	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
 	// Upload file to Cloudinary
-	// resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "thejourney"});
+	resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "thejourney"})
 
 	CreatedAt := time.Now()
 
 	journey := models.Journey{
 		Title:       request.Title,
 		Description: request.Description,
-		Image:       filename,
-		Books:       "false",
-		// Image:       resp.SecureURL,
+		// Image:       filename,
+		Image:     resp.SecureURL,
+		Books:     "false",
 		CreatedAt: CreatedAt,
 		UserID:    userId,
 	}
