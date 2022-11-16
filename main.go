@@ -6,6 +6,7 @@ import (
 	"be-journey/routes"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -15,6 +16,11 @@ import (
 func main() {
 	// Init godotenv here ...
 	// env
+	// errEnv := godotenv.Load()
+	// if errEnv != nil {
+	// 	panic("Failed to load env file")
+	// }
+
 	errEnv := godotenv.Load()
 	if errEnv != nil {
 		panic("Failed to load env file")
@@ -35,6 +41,11 @@ func main() {
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
 	// var port = os.Getenv("PORT")
-	fmt.Println("Server Running on localhost: 5000")
-	http.ListenAndServe("localhost:5000", handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	// fmt.Println("Server Running on localhost: 5000")
+	// http.ListenAndServe("localhost:5000", handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+
+	// using postgressql
+	var port = os.Getenv("PORT")
+	fmt.Println("server running localhost:" + port)
+	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }
