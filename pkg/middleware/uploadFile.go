@@ -63,8 +63,7 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 			json.NewEncoder(w).Encode(response)
 			return
 		}
-
-		tempFile, err := ioutil.TempFile("Uploads", "image-*.png")
+		tempFile, err := ioutil.TempFile("uploads", "image-*.png")
 		if err != nil {
 			fmt.Println(err)
 			fmt.Println("path upload error")
