@@ -5,7 +5,6 @@ import (
 	dto "be-journey/dto/result"
 	"be-journey/models"
 	"be-journey/repositories"
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,8 +12,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -40,40 +37,14 @@ func (h *handlerJourney) FindJourneys(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create Embed Path File on Image property here ...
-	// for i, p := range journeys {
-	// 	journeys[i].Image = os.Getenv("PATH_FILE") + p.Image
-	// }
+	for i, p := range journeys {
+		journeys[i].Image = os.Getenv("PATH_FILE") + p.Image
+	}
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: journeys}
 	json.NewEncoder(w).Encode(response)
 }
-
-// get journey by user id
-// func (h *handlerJourney) GetJourneyUser(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	user_id, _ := strconv.Atoi(mux.Vars(r)["user_id"])
-
-// 	var journey []models.Journey
-// 	journey, err := h.JourneyRepository.GetJourneyUser(user_id)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
-
-// 	// Create Embed Path File on Image property here ...
-// delete this code if using cloudinary
-// 	for i, p := range journey {
-// 		journey[i].Image = os.Getenv("PATH_FILE") + p.Image
-// 	}
-
-// 	w.WriteHeader(http.StatusOK)
-// 	response := dto.SuccessResult{Code: http.StatusOK, Data: journey}
-// 	json.NewEncoder(w).Encode(response)
-// }
 
 // get journey by id journey
 func (h *handlerJourney) GetJourney(w http.ResponseWriter, r *http.Request) {
@@ -81,22 +52,23 @@ func (h *handlerJourney) GetJourney(w http.ResponseWriter, r *http.Request) {
 
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
-	journey, err := h.JourneyRepository.GetJourney(id)
+	var journeys models.Journey
+	journeys, err := h.JourneyRepository.GetJourney(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	// for i, p := range journeys {
-	// 	journeys[i].Image = os.Getenv("PATH_FILE") + p.Image
+	// for i, p := range journey {
+	// 	journey[i].Image = os.Getenv("PATH_FILE") + p.Image
 	// }
 
 	// delete this code if using cloudinary
-	// journey.Image = os.Getenv("PATH_FILE") + journey.Image
+	journeys.Image = os.Getenv("PATH_FILE") + journeys.Image
 
 	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: journey}
+	response := dto.SuccessResult{Code: http.StatusOK, Data: journeys}
 	json.NewEncoder(w).Encode(response)
 }
 
@@ -114,6 +86,7 @@ func (h *handlerJourney) CreateJourney(w http.ResponseWriter, r *http.Request) {
 	request := journeydto.JourneyRequest{
 		Title:       r.FormValue("title"),
 		Description: r.FormValue("description"),
+		Image:       path_file,
 		UserID:      userId,
 	}
 
@@ -136,26 +109,29 @@ func (h *handlerJourney) CreateJourney(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//  ========== IF WANT TO DEPLOY TO HEROKU & CLOUDINARY, UNCOMMENT THIS CODE BELOW ============ \\
 	// Declare Context Background, Cloud Name, API Key, API Secret
-	var ctx = context.Background()
+	// var ctx = context.Background()
 
-	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	var API_KEY = os.Getenv("API_KEY")
-	var API_SECRET = os.Getenv("API_SECRET")
+	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	// var API_KEY = os.Getenv("API_KEY")
+	// var API_SECRET = os.Getenv("API_SECRET")
 
+	//  ========== IF WANT TO DEPLOY TO HEROKU & CLOUDINARY, UNCOMMENT THIS CODE BELOW ============ \\
 	// Add Cloudinary credentials
-	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
+	//  ========== IF WANT TO DEPLOY TO HEROKU & CLOUDINARY, UNCOMMENT THIS CODE BELOW ============ \\
 	// Upload file to Cloudinary
-	resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "thejourney"})
+	// resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "thejourney"})
 
 	CreatedAt := time.Now()
 
 	journey := models.Journey{
 		Title:       request.Title,
 		Description: request.Description,
-		// Image:       filename,
-		Image:     resp.SecureURL,
+		Image:       filename,
+		// Image:     resp.SecureURL,
 		Books:     "false",
 		CreatedAt: CreatedAt,
 		UserID:    userId,
