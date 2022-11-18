@@ -83,12 +83,13 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		// filename := data[8:] // split uploads/
+		// ==== IF USING CLOUDINARY, COMMENT THIS CODE ========== //
+		filename := data[8:] // split uploads/
 		fmt.Println(data)
 		// fmt.Println(filename)
 
 		// add filename to ctx
-		ctx := context.WithValue(r.Context(), "dataFile", data)
+		ctx := context.WithValue(r.Context(), "dataFile", filename) // IF USING CLOUDINARY CHANGE FILENAME TO DATA === //
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

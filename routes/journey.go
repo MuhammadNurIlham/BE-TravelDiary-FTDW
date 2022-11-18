@@ -18,6 +18,6 @@ func JourneyRoutes(r *mux.Router) {
 	r.HandleFunc("/journey/{id}", h.GetJourney).Methods("GET") // for get journey base on id journey
 	r.HandleFunc("/journey", middleware.Auth(middleware.UploadFile(h.CreateJourney))).Methods("POST")
 	// r.HandleFunc("/journeys/{user_id}", h.DeleteJourney).Methods("DELETE")
-	r.HandleFunc("/journey/{id}", middleware.Auth(h.UpdateJourney)).Methods("PATCH") //for update
+	r.HandleFunc("/journey/{id}", middleware.Auth(middleware.UploadFile(h.UpdateJourney))).Methods("PATCH") //for update
 	r.HandleFunc("/journey/{id}", h.DeleteJourney).Methods("DELETE")
 }

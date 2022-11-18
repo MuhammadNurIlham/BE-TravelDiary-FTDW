@@ -179,11 +179,23 @@ func (h *handlerJourney) UpdateJourney(w http.ResponseWriter, r *http.Request) {
 
 	journey, _ := h.JourneyRepository.GetJourney(int(id))
 
-	// journey.Title = request.Title
-	// journey.UserID = request.UserID
-	// journey.Image = request.Image
-	// journey.Description = request.Description
+	journey.Title = request.Title
+	journey.UserID = request.UserID
+	journey.Image = request.Image
+	journey.Description = request.Description
 	journey.UpdatedAt = UpdatedAt
+
+	if request.Title != "" {
+		journey.Title = request.Title
+	}
+
+	if request.Description != "" {
+		journey.Description = request.Description
+	}
+
+	// if filepath != "false" {
+	// 	journey.Image = resp.SecureURL
+	// }
 
 	if request.Books != "" {
 		journey.Books = request.Books
