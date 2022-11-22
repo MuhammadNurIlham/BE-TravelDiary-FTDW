@@ -68,7 +68,7 @@ func (h *handlerJourney) GetJourney(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// delete this code if using cloudinary
-	// journeys.Image = os.Getenv("PATH_FILE") + journeys.Image
+	journeys.Image = os.Getenv("PATH_FILE") + journeys.Image
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: journeys}
