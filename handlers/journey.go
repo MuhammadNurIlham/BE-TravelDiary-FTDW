@@ -5,6 +5,7 @@ import (
 	dto "be-journey/dto/result"
 	"be-journey/models"
 	"be-journey/repositories"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -65,7 +68,7 @@ func (h *handlerJourney) GetJourney(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	// delete this code if using cloudinary
-	journeys.Image = os.Getenv("PATH_FILE") + journeys.Image
+	// journeys.Image = os.Getenv("PATH_FILE") + journeys.Image
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: journeys}
@@ -111,27 +114,27 @@ func (h *handlerJourney) CreateJourney(w http.ResponseWriter, r *http.Request) {
 
 	//  ========== IF WANT TO DEPLOY TO HEROKU & CLOUDINARY, UNCOMMENT THIS CODE BELOW ============ \\
 	// Declare Context Background, Cloud Name, API Key, API Secret
-	// var ctx = context.Background()
+	var ctx = context.Background()
 
-	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	// var API_KEY = os.Getenv("API_KEY")
-	// var API_SECRET = os.Getenv("API_SECRET")
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
 
 	//  ========== IF WANT TO DEPLOY TO HEROKU & CLOUDINARY, UNCOMMENT THIS CODE BELOW ============ \\
 	// Add Cloudinary credentials
-	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
 	//  ========== IF WANT TO DEPLOY TO HEROKU & CLOUDINARY, UNCOMMENT THIS CODE BELOW ============ \\
 	// Upload file to Cloudinary
-	// resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "thejourney"})
+	resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "thejourney"})
 
 	CreatedAt := time.Now()
 
 	journey := models.Journey{
 		Title:       request.Title,
 		Description: request.Description,
-		Image:       filename,
-		// Image:     resp.SecureURL,
+		// Image:       filename,
+		Image:     resp.SecureURL,
 		Books:     "false",
 		CreatedAt: CreatedAt,
 		UserID:    userId,

@@ -6,6 +6,7 @@ import (
 	"be-journey/routes"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -41,11 +42,11 @@ func main() {
 
 	// ===== if using localhost my sql ====== \\
 	// var port = 5000
-	fmt.Println("Server Running on localhost: 5000")
-	http.ListenAndServe("localhost:5000", handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	// fmt.Println("Server Running on localhost: 5000")
+	// http.ListenAndServe("localhost:5000", handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 
 	// ============= using postgressql ============ //
-	// var port = os.Getenv("PORT")
-	// fmt.Println("server running localhost:" + port)
-	// http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	var port = os.Getenv("PORT")
+	fmt.Println("server running localhost:" + port)
+	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }
